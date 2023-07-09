@@ -5,14 +5,22 @@ import { Container } from "reactstrap";
 
 class AppleButton extends React.Component {
   state = {
-    authResponse: {}
+    authResponse: {},
   };
-  appleResponse = response => {
+  appleResponse = (response) => {
     if (!response.error) {
       axios
-        .post("/auth", response)
-        .then(res => this.setState({ authResponse: res.data }))
-        .catch(err => console.log(err));
+        .get(
+          `http://localhost:3009/v1/auth/apple/token?access_token=${response.authorization.id_token}&deviceId=123123123&fcmToken=123131313`,
+          {
+            headers: {
+              "x-app-token":
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAtbmFtZSI6IlN0b2tlZCJ9.Cn-_fpj9JPiTL9D7HXdghE7z1Xclqn77qWgEHgUsHoY",
+            },
+          }
+        )
+        .then((res) => this.setState({ authResponse: res.data }))
+        .catch((err) => console.log(err));
     }
   };
 
@@ -23,13 +31,13 @@ class AppleButton extends React.Component {
           <div>
             {Object.keys(this.state.authResponse).length === 0 ? (
               <AppleLogin
-                clientId="YOUR_CLIENT_ID"
-                redirectURI="https://example.com/auth"
+                clientId="com.stoked.ios.signin"
+                redirectURI="https://stoked.tunnelto.dev"
                 usePopup={true}
                 callback={this.appleResponse}
                 scope="email name"
                 responseMode="query"
-                render={renderProps => (
+                render={(renderProps) => (
                   <button
                     onClick={renderProps.onClick}
                     style={{
@@ -38,7 +46,7 @@ class AppleButton extends React.Component {
                       border: "1px solid black",
                       fontFamily: "none",
                       lineHeight: "25px",
-                      fontSize: "25px"
+                      fontSize: "25px",
                     }}
                   >
                     <i className="fa-brands fa-apple px-2 "></i>
